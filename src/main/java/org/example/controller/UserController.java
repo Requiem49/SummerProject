@@ -55,11 +55,17 @@ public class UserController {
     }
 
     @PostMapping(path = "/user/login")
-    public Resp login(@RequestParam("username") String username,
+    public Resp login(@RequestParam("phone") String phone,
+                      @RequestParam("email") String email,
                       @RequestParam("password") String password) {
+        IdentityParameters identityParameters = new IdentityParameters();
+
+        identityParameters.setPasswd(password);
+        identityParameters.setPhone(phone);
+        identityParameters.setEmail(email);
         String result = null;
         try {
-            userService.login(new IdentityParameters());
+            userService.login(identityParameters);
             result = "success";
         } catch (UserException userException) {
             userException.printStackTrace();

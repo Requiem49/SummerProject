@@ -76,8 +76,34 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void login(IdentityParameters identityParameters) throws UserException {
+        String password = identityParameters.getPasswd();
+        String email = identityParameters.getEmail();
+        String phone = identityParameters.getPhone();
 
+        boolean invalidPasswd = StringUtils.isBlank( password);
+        boolean invalidId = StringUtils.isAllBlank(email, password);
+
+        if (invalidPasswd || invalidId) {
+            throw new UserException.InvalidParameterException("parameters invalid");
+        }
+
+        User userByEmail = userRepo.findUserByEmail(email);
+        User userByPhone = userRepo.findUserByEmail(phone);
+        if (null == userByEmail && null == userByPhone) {
+            throw new UserException.UserNotFoundException("User " + email +" " + phone+ " does not exist");
+        }
+
+
+
+        if (userByEmail != null &&!password.equals(userByEmail.getPasswd())) {
+            throw new UserException.InvalidPasswordException("Passwords do not match");
+        }
+        if (userByPhone != null &&!password.equals(userByPhone.getPasswd())) {
+            throw new UserException.InvalidPasswordException("Passwords do not match");
+        }
     }
+
+
 }
 
 
